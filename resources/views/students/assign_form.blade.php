@@ -7,6 +7,12 @@
             <h4 class="mt-4">Assign Teacher</h4>
         </div>
         <div class="card-body">
+           @if($message = Session::get('success'))
+            <div class="alert alert-success alert-block">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <strong>{{ $message }}</strong>
+            </div>
+            @endif
             <form action="{{route('assign.teacher.post',['id'=>$id])}}" method="POST">
                 @csrf()
                 <div class="form-group">

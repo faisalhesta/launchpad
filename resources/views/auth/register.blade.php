@@ -7,8 +7,9 @@
             <div class="card">
                 <div class="card-header">{{ __('Register') }}</div>
 
-                <div class="card-body">
-                    <form method="POST" action="{{ route('register') }}">
+                <div class="card-body text-center">
+                    <a href="{{ route('teachers.register') }}" class="btn btn-primary">Register as Teacher</a><a href="{{ route('students.register') }}" class="btn btn-primary ml-5">Register as Student</a>
+                    <!-- <form method="POST" action="{{ route('register') }}">
                         @csrf
 
                         <div class="form-group row">
@@ -86,7 +87,7 @@
                                 </button>
                             </div>
                         </div>
-                    </form>
+                    </form> -->
                 </div>
             </div>
         </div>

@@ -21,9 +21,13 @@ Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('/teachers/list',[App\Http\Controllers\TeachersController::class,'list'])->name('teachers.list');
+Route::get('/teachers/register',[App\Http\Controllers\TeachersController::class,'register'])->name('teachers.register');
+Route::post('/teachers/register',[App\Http\Controllers\TeachersController::class,'store'])->name('teachers.store');
 Route::get('/teachers/approve/{id}',[App\Http\Controllers\TeachersController::class,'approve'])->name('teacher.approve');
 
 Route::get('/students/list',[App\Http\Controllers\StudentsController::class,'list'])->name('students.list');
+Route::get('/students/register',[App\Http\Controllers\StudentsController::class,'register'])->name('students.register');
+Route::post('/students/register',[App\Http\Controllers\StudentsController::class,'store'])->name('students.store');
 Route::get('/students/assign-teacher/{id}',[App\Http\Controllers\StudentsController::class,'assign_form'])->name('students.assign');
 Route::post('/students/assign-teacher/{id}',[App\Http\Controllers\StudentsController::class,'assign_teacher'])->name('assign.teacher.post');
 

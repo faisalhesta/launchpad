@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
@@ -20,6 +22,14 @@ class LoginController extends Controller
     */
 
     use AuthenticatesUsers;
+
+    protected function authenticated(Request $request, $user)
+    {
+        if ($user->user_type!='0' && $user->email_verified_at == "") {
+            Auth::logout();
+            return redirect('/login')->with('error', 'Your request is pending for approval');
+        }
+    }
 
     /**
      * Where to redirect users after login.

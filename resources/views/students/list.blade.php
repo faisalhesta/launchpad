@@ -1,6 +1,13 @@
 @extends('layouts.admin')
 @section('content')
-   <div class="row">
+   
+    @if($message = Session::get('success'))
+        <div class="alert alert-success alert-block">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            <strong>{{ $message }}</strong>
+        </div>
+     @endif
+     <div class="row">
         <table class="table">
             <tr>
                 <thead>
@@ -49,7 +56,7 @@
                     @else
                     <td colspan="5"></td>
                     @endif
-                    <td><a href="{{route('students.assign',['id'=>$user->id])}}" title="Assign teacher">{{$user->student->assigned_teacher?$user->student->teacher->name:'Not Assigned'}}</a></td>
+                    <td><a href="{{route('students.assign',['id'=>$user->id])}}" title="Assign teacher">{{$user->student && $user->student->assigned_teacher?$user->student->teacher->name:'Not Assigned'}}</a></td>
                     <td>@if(!$user->email_verified_at)
                         <a href="{{route('teacher.approve',['id'=>$user->id])}}" title="click to approved!">Unapproved</a></td>
                         @else
