@@ -8,6 +8,7 @@ use App\Models\Teacher;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Mail;
 
 class TeachersController extends Controller
 {
@@ -52,7 +53,14 @@ class TeachersController extends Controller
 
     public function approve($id)
     {
-       User::where('id',$id)->update(['email_verified_at'=>now()]);
+        User::where('id',$id)->update(['email_verified_at'=>now()]);
+        $user = User::find($id);
+        $data = ['name'=>$user->name,'data'=>"You login request has been approved by admin successfully!",'email'=>$user->email];
+        Mail::send('mail.approve', $data, function ($message) use($user) {
+            $message->to($user->email);
+            $message->subject('Approval Request');
+        });
+       
        return redirect()->back()->withSuccess("User Profile Approved Successfully!");
 
     }
