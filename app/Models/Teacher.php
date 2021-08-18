@@ -17,4 +17,10 @@ class Teacher extends Model
         'experience',
         'expertise_in_subject'
     ];
+
+    protected $appends = ['image_url'];
+    public function getImageUrlAttribute()
+    {
+        return asset('uploads/teachers').'/'.$this->profile_picture;
+    }
 }

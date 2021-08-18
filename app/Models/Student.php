@@ -18,17 +18,15 @@ class Student extends Model
         'assigned_teacher'
     ];
 
+    protected $appends = ['image_url'];
+
    public function teacher()
    {
     return $this->hasOne(User::class,'id','assigned_teacher');
    }
-//    public function getAssignedTeacherAttribute()
-//    {
-//        if($this->teacher){
-//             return $this->teacher->name;
-//        }
-//        else{
-//            return null;
-//        }
-//    }
+
+   public function getImageUrlAttribute()
+   {
+       return asset('uploads/students').'/'.$this->profile_picture;
+   }
 }

@@ -27,6 +27,8 @@ Route::post('/student/register', [ApiController::class, 'register_student']);
 Route::group(['middleware' => ['jwt.verify']], function() {
     Route::get('logout', [ApiController::class, 'logout']);
     Route::get('get_user', [ApiController::class, 'get_user']);
+    Route::post('/teacher/update', [ApiController::class, 'update_teacher']);
+    Route::post('/student/update', [ApiController::class, 'update_student']);
     // Route::get('products', [ProductController::class, 'index']);
     // Route::get('products/{id}', [ProductController::class, 'show']);
     // Route::post('create', [ProductController::class, 'store']);

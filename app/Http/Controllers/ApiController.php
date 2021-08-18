@@ -2,37 +2,95 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreTeachers;
+use App\Http\Resources\StudentResource;
+use App\Http\Resources\TeacherResource;
+use App\Models\Student;
+use App\Models\Teacher;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Exceptions\JWTException;
-use Tymon\JWTAuth\Facades\JWTAuth;
+use JWTAuth;
 
 class ApiController extends Controller
 {
     public function register_teacher(Request $request)
     {
     	//Validate data
-        $data = $request->only('name', 'email', 'password');
+        $data = $request->all();
         $validator = Validator::make($data, [
-            'name' => 'required|string',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|string|min:6|max:50'
-        ]);
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',            
+            'profile_picture'=>'required|mimes:png,jpg,jpeg',
+            'address'=>'required|string',
+            'current_school' => 'nullable|string',
+            'previous_school' => 'nullable|string',
+            'experience' =>'required|string',
+            'expertise_in_subject'=>'required|string',
+            'password' => 'required|string|min:8']);
 
         //Send failed response if request is not valid
         if ($validator->fails()) {
             return response()->json(['error' => $validator->messages()], 200);
         }
 
-        //Request is valid, create new user
+        //Request is valid, create new user      
         $user = User::create([
-        	'name' => $request->name,
-            'user_type'=>'1',
-        	'email' => $request->email,
-        	'password' => bcrypt($request->password)
-        ]);
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'user_type'=> '2',
+            'password' => Hash::make($data['password']),
+        ]);        
+        unset($data['name']);
+        $fileName = time().'.'.$request->profile_picture->extension();
+        $request->profile_picture->move(public_path('uploads/teachers/'), $fileName);
+        $data['profile_picture'] = $fileName;
+        $data['user_id'] = $user->id;
+        Teacher::updateOrCreate(['user_id'=>$user->id
+        ],$data);
+
+        //User created, return success response
+        return response()->json([
+            'success' => true,
+            'message' => 'User created successfully',
+            'data' => $user
+        ], Response::HTTP_OK);
+    }
+
+    public function update_teacher(Request $request)
+    {
+    	//Validate data
+        $data = $request->all();
+        $validator = Validator::make($data, [
+            'name'                 => 'required|string|max:255',                     
+            'profile_picture'      => 'required|mimes:png,jpg,jpeg',
+            'address'              => 'required|string',
+            'current_school'       => 'nullable|string',
+            'previous_school'      => 'nullable|string',
+            'experience'           => 'required|string',
+            'expertise_in_subject' => 'required|string',
+            ]);
+
+        //Send failed response if request is not valid
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->messages()], 200);
+        }
+
+        //Request is valid, create new user  
+        $user = JWTAuth::authenticate($request->token);      
+        User::where('id',$user->id)->update([
+            'name' => $data['name']  
+        ]);        
+        unset($data['name']);
+        $fileName = time().'.'.$request->profile_picture->extension();
+        $request->profile_picture->move(public_path('uploads/teachers/'), $fileName);
+        $data['profile_picture'] = $fileName;
+        $data['user_id'] = $user->id;
+        Teacher::updateOrCreate(['user_id'=>$user->id
+        ],$data);
 
         //User created, return success response
         return response()->json([
@@ -45,11 +103,17 @@ class ApiController extends Controller
     public function register_student(Request $request)
     {
     	//Validate data
-        $data = $request->only('name', 'email', 'password');
+        $data = $request->all();
         $validator = Validator::make($data, [
-            'name' => 'required|string',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|string|min:6|max:50'
+            'name'                 => 'required|string|max:255',
+            'email'                => 'required|string|email|max:255|unique:users',            
+            'profile_picture'      => 'required|mimes:png,jpg,jpeg',
+            'address'              => 'required|string',
+            'current_school'       => 'nullable|string',
+            'previous_school'      => 'nullable|string',
+            'experience'           => 'required|string',
+            'expertise_in_subject' => 'required|string',
+            'password'             => 'required|string|min:8'
         ]);
 
         //Send failed response if request is not valid
@@ -57,13 +121,20 @@ class ApiController extends Controller
             return response()->json(['error' => $validator->messages()], 200);
         }
 
-        //Request is valid, create new user
+        //Request is valid, create new user        
         $user = User::create([
-        	'name' => $request->name,
-        	'email' => $request->email,
-            'user_type'=>'2',
-        	'password' => bcrypt($request->password)
-        ]);
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'user_type'=> '2',
+                'password' => Hash::make($data['password']),
+        ]);         
+        unset($data['name']);
+        $fileName = time().'.'.$request->profile_picture->extension();
+        $request->profile_picture->move(public_path('uploads/students/'), $fileName);
+        $data['profile_picture'] = $fileName;
+        $data['user_id'] = $user->id;
+        Student::updateOrCreate(['user_id'=>$user->id
+        ],$data);
 
         //User created, return success response
         return response()->json([
@@ -72,7 +143,50 @@ class ApiController extends Controller
             'data' => $user
         ], Response::HTTP_OK);
     }
- 
+    
+    public function update_student(Request $request)
+    {
+    	//Validate data
+        $data = $request->all();
+        $validator = Validator::make($data, [
+            'name'                 => 'required|string|max:255',
+            // 'email'                => 'required|string|email|max:255|unique:users',            
+            'profile_picture'      => 'required|mimes:png,jpg,jpeg',
+            'address'              => 'required|string',
+            'current_school'       => 'nullable|string',
+            'previous_school'      => 'nullable|string',
+            'experience'           => 'required|string',
+            'expertise_in_subject' => 'required|string',
+            // 'password'             => 'required|string|min:8'
+        ]);
+
+        //Send failed response if request is not valid
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->messages()], 200);
+        }
+
+        //Request is valid, create new user
+        $user = JWTAuth::authenticate($request->token);        
+        User::where('id',$user->id)->update([
+                'name' => $data['name'],                
+                'user_type'=> '2',
+        ]);         
+        unset($data['name']);
+        $fileName = time().'.'.$request->profile_picture->extension();
+        $request->profile_picture->move(public_path('uploads/students/'), $fileName);
+        $data['profile_picture'] = $fileName;
+        $data['user_id'] = $user->id;
+        Student::updateOrCreate(['user_id'=>$user->id
+        ],$data);
+
+        //User created, return success response
+        return response()->json([
+            'success' => true,
+            'message' => 'User created successfully',
+            'data' => $user
+        ], Response::HTTP_OK);
+    }
+
     public function authenticate(Request $request)
     {
         $credentials = $request->only('email', 'password');
@@ -147,7 +261,18 @@ class ApiController extends Controller
         ]);
  
         $user = JWTAuth::authenticate($request->token);
+        if($user->user_type=='1')
+        {
+           return new TeacherResource(User::find($user->id));
+
+        }
+        elseif($user->user_type=='2'){
+           return new StudentResource(User::find($user->id));
+        }
+        else{
+           return response()->json(['data' => $user]);
+             
+        }
  
-        return response()->json(['user' => $user]);
     }
 }
