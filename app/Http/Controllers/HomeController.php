@@ -23,18 +23,18 @@ class HomeController extends Controller
      */
     public function index()
     {
-        if(auth()->user()->user_type=='1'){
-            return view('teachers.home');
-        }
+        // if(auth()->user()->user_type=='1'){
+        //     return view('teachers.home');
+        // }
 
-        elseif(auth()->user()->user_type=='2')
-        {
-            return view('students.home');
-        }
+        // elseif(auth()->user()->user_type=='2')
+        // {
+        //     return view('students.home');
+        // }
 
-        else{
+        // else{
             return view('home');
-        }
+        // }
 
     }
 }

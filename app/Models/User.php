@@ -24,6 +24,8 @@ class User extends Authenticatable implements JWTSubject
         'password',
     ];
 
+    protected $appends = ['user_role','is_admin'];
+
     /**
      * The attributes that should be hidden for arrays.
      *
@@ -51,6 +53,29 @@ class User extends Authenticatable implements JWTSubject
     public function student()
     {
         return $this->hasOne(Student::class,'user_id','id');
+    }
+
+    public function getUserRoleAttribute()
+    {
+        if($this->user_type=='1'){
+            return 'Teacher';
+        }
+        elseif($this->user_type=='2'){
+            return 'Student';
+        }
+        else{
+            return 'Admin';
+        }
+    }
+
+    public function getIsAdminAttribute()
+    {
+        if($this->user_type=='0'){
+            return true;
+        }
+        else{
+            return false;
+        }
     }
 
     public function getJWTIdentifier()

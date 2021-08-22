@@ -6,6 +6,7 @@ use App\Http\Requests\StoreStudents;
 use App\Http\Requests\StudentProfile;
 use App\Models\Student;
 use App\Models\User;
+use App\Notifications\AssignedTeacher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -46,7 +47,9 @@ class StudentsController extends Controller
 
     public function assign_teacher($id,Request $request)
     {
-        Student::where('user_id',$id)->update(['assigned_teacher'=>$request->teacher]);
+        Student::updateOrCreate(['user_id'=>$id],['user__id'=>$id,'assigned_teacher'=>$request->teacher]);
+        $data = ['message'=>'New student assigned to you','student_id'=>$id];
+        User::find($request->teacher)->notify(new AssignedTeacher($data));
         return redirect()->back()->withSuccess('Teacher assign successfully!');
     }
     public function assign_form($id)
@@ -63,5 +66,10 @@ class StudentsController extends Controller
     public function register()
     {
         return view('students.add');
+    }
+
+    public function profile()
+    {
+        return view('students.home');
     }
 }

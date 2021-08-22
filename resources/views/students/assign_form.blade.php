@@ -20,7 +20,7 @@
                         <select name="teacher" id="" class="form-control" required>
                             <option value="">Select</option>
                            @foreach ($teachers as $user)
-                               <option value="{{$user->id}}">{{$user->name}}</option>
+                               <option value="{{$user->id}}" {{\App\Models\User::find($id)->student->assigned_teacher==$user->id?'selected':''}}>{{$user->name}}</option>
                            @endforeach
 
                         </select>

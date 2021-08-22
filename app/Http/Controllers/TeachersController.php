@@ -6,6 +6,7 @@ use App\Http\Requests\StoreTeachers;
 use App\Http\Requests\TeacherProfile;
 use App\Models\Teacher;
 use App\Models\User;
+use App\Notifications\ApproveRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Mail;
@@ -60,6 +61,8 @@ class TeachersController extends Controller
             $message->to($user->email);
             $message->subject('Approval Request');
         });
+
+        $user->notify(new ApproveRequest);
        
        return redirect()->back()->withSuccess("User Profile Approved Successfully!");
 
@@ -68,5 +71,10 @@ class TeachersController extends Controller
     public function register()
     {
         return view('teachers.add');
+    }
+
+    public function profile()
+    {
+        return view('teachers.home');
     }
 }
